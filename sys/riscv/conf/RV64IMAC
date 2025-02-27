@@ -1,0 +1,11 @@
+
+#NO_UNIVERSE
+
+include "GENERIC"
+
+ident RV64IMAC
+
+options         MD_ROOT
+options         MD_ROOT_SIZE=65536      # 64MB ram disk
+makeoptions     MFS_IMAGE=/home/an683/freebsd-riscv/mdroot.img
+options         ROOTDEVNAME=\"ufs:/dev/md0\"
