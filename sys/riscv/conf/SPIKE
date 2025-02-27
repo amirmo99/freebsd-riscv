@@ -4,7 +4,7 @@
 # For more information on this file, please read the config(5) manual page,
 # and/or the handbook section on Kernel Configuration Files:
 #
-#    https://www.FreeBSD.org/doc/en_US.ISO8859-1/books/handbook/kernelconfig-config.html
+#    https://docs.freebsd.org/en/books/handbook/kernelconfig/#kernelconfig-config
 #
 # The handbook is also available locally in /usr/share/doc/handbook
 # if you've installed the doc distribution, otherwise always see the
@@ -16,10 +16,9 @@
 # If you are in doubt as to the purpose or necessity of a line, check first
 # in NOTES.
 #
-# $FreeBSD$
 
 cpu		RISCV
-ident		GENERIC
+ident		SPIKE
 
 makeoptions	DEBUG=-g		# Build kernel with gdb(1) debug symbols
 makeoptions	WITH_CTF=1		# Run ctfconvert(1) for DTrace support
@@ -31,7 +30,7 @@ options 	INET			# InterNETworking
 options 	INET6			# IPv6 communications protocols
 options 	TCP_HHOOK		# hhook(9) framework for TCP
 options 	IPSEC_SUPPORT		# Allow kldload of ipsec and tcpmd5
-options		ROUTE_MPATH		# Multipath routing support
+options 	ROUTE_MPATH		# Multipath routing support
 options 	TCP_OFFLOAD		# TCP offload
 options 	TCP_BLACKBOX		# Enhanced TCP event logging
 options 	TCP_RFC7413		# TCP Fast Open
@@ -54,6 +53,7 @@ options 	TMPFS			# Efficient memory filesystem
 options 	GEOM_RAID		# Soft RAID functionality.
 options 	GEOM_LABEL		# Provides labelization
 options 	COMPAT_FREEBSD12	# Compatible with FreeBSD12
+options 	COMPAT_FREEBSD13	# Compatible with FreeBSD13
 options 	SCSI_DELAY=5000		# Delay (in ms) before probing SCSI
 options 	KTRACE			# ktrace(1) support
 options 	STACK			# stack(9) support
@@ -71,18 +71,15 @@ options 	MAC			# TrustedBSD MAC Framework
 options 	KDTRACE_FRAME		# Ensure frames are compiled in
 options 	KDTRACE_HOOKS		# Kernel DTrace hooks
 options 	DDB_CTF			# Kernel ELF linker loads CTF data
-options 	FPE			# Floating-point extension support
 options 	RACCT			# Resource accounting framework
 options 	RACCT_DEFAULT_TO_DISABLED # Set kern.racct.enable=0 by default
 options 	RCTL			# Resource limits
 ###options 	SMP
-options 	INTRNG
 
 # RISC-V SBI console
 device		rcons
 
-# EXT_RESOURCES pseudo devices
-options 	EXT_RESOURCES
+# pseudo devices
 device		clk
 device		hwreset
 device		syscon
@@ -103,6 +100,9 @@ device		vtnet			# VirtIO Ethernet device
 device		virtio_blk		# VirtIO Block device
 device		virtio_mmio		# VirtIO MMIO bus
 
+# ATA/SCSI peripherals
+device		pass			# Passthrough device (direct ATA/SCSI access)
+
 # NVM Express (NVMe) support
 device		nvme		# base NVMe driver
 options 	NVME_USE_NVD=0	# prefer the cam(4) based nda(4) driver
@@ -115,12 +115,15 @@ device		uhci			# UHCI USB interface
 device		ehci			# EHCI USB interface (USB 2.0)
 device		xhci			# XHCI USB interface (USB 3.0)
 device		usb			# USB Bus (required)
+device		usbhid			# USB HID Transport
+device		hkbd			# Keyboard
 device		ukbd			# Keyboard
 device		umass			# Disks/Mass storage - Requires scbus and da
 
 # HID support
 options 	HID_DEBUG	# enable debug msgs
 device		hid		# Generic HID support
+device		hidbus		# Generic HID Bus
 
 # DTrace support
 # device	dtrace
@@ -141,6 +144,7 @@ device		vt
 device		kbdmux
 
 # RTC
+device		da9063_rtc	# Dialog Semiconductor DA9063 RTC
 device		goldfish_rtc	# QEMU RTC
 
 # Ethernet drivers
@@ -159,11 +163,14 @@ device		gpio
 device		spibus
 device		spigen
 
+# Power management controllers
+device		da9063_pmic	# Dialog Semiconductor DA9063 PMIC
+
 # Uncomment for memory disk
-# options 	MD_ROOT
-# options 	MD_ROOT_SIZE=32768	# 32MB ram disk
-# makeoptions	MFS_IMAGE=/path/to/img
-# options 	ROOTDEVNAME=\"ufs:/dev/md0\"
+options 	MD_ROOT
+options 	MD_ROOT_SIZE=32768	# 32MB ram disk
+makeoptions	MFS_IMAGE=/home/an683/freebsd-riscv/mdroot.img
+options 	ROOTDEVNAME=\"ufs:/dev/md0\"
 
 # Uncomment for virtio block device
 # options 	ROOTDEVNAME=\"ufs:/dev/vtbd0\"
@@ -173,7 +180,7 @@ options 	KDB			# Enable kernel debugger support.
 options 	KDB_TRACE		# Print a stack trace for a panic.
 
 # Kernel dump features.
-options		ZSTDIO			# zstd-compressed kernel and user dumps
+options 	ZSTDIO			# zstd-compressed kernel and user dumps
 
 # Pseudo devices.
 device		crypto		# core crypto support

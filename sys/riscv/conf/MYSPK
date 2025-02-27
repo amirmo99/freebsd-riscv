@@ -1,0 +1,12 @@
+# $FreeBSD$
+
+#NO_UNIVERSE
+
+include "GENERIC"
+
+ident MYSPK
+
+options         MD_ROOT
+options         MD_ROOT_SIZE=32768      # 32MB ram disk
+makeoptions     MFS_IMAGE=\"/home/an683/freebsd-riscv/mdroot.img\" 
+options         ROOTDEVNAME=\"ufs:/dev/md0\"
