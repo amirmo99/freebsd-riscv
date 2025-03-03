@@ -1,0 +1,3 @@
+[submodule "zephyr-board-dashkin"]
+	path = zephyr-board-dashkin
+	url = https://github.com/rad68/zephyr-board-dashkin.git
