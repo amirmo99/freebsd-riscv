@@ -35,6 +35,8 @@ SRCS=	${uart_bus_acpi} uart_bus_isa.c \
 	uart_dev_quicc.c uart_dev_z8530.c \
 	uart_if.c uart_if.h uart_subr.c uart_tty.c
 
+SRCS+=  uart_dev_amir.c
+
 SRCS+=	acpi_if.h bus_if.h device_if.h isa_if.h ${ofw_bus_if} pci_if.h \
 	serdev_if.h
 SRCS+=	opt_acpi.h opt_platform.h opt_uart.h

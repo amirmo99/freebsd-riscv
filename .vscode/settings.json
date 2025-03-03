@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "bus.h": "c",
+        "acpi.h": "c",
+        "acenv.h": "c"
+    }
+}
