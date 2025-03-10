@@ -1,48 +1,61 @@
-/*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
- *
- * Copyright (c) 2003 Marcel Moolenaar
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * $FreeBSD$
- */
-
 #ifndef _DEV_UART_DEV_ACCIO_H_
 #define _DEV_UART_DEV_ACCIO_H_
+
+//FIFO Depth
+#define DASHKIN_UART_FIFO_DEPTH 8
+
+#define DASHKIN_UART_BASE 0x10010000
+
+//Memory offsets
+#define DASHKIN_UART_CFG_OFFSET     0x00
+#define DASHKIN_UART_RX_DATA_OFFSET 0x04
+#define DASHKIN_UART_TX_DATA_OFFSET 0x08
+#define DASHKIN_UART_RX_STAT_OFFSET 0x0C
+#define DASHKIN_UART_TX_STAT_OFFSET 0x10
+
+//Bit masks
+#define DASHKIN_UART_CFG_PARITY 	0x00000001
+#define DASHKIN_UART_CFG_STOP   	0x00000002
+#define DASHKIN_UART_CFG_ORDER  	0x00000004
+#define DASHKIN_UART_CFG_ENABLE 	0x00000008
+#define DASHKIN_UART_CFG_BAUD   	0x000000E0
+#define DASHKIN_UART_CFG_RX_CNT 	0x0000FF00
+#define DASHKIN_UART_CFG_RX_IRQ 	0x00010000
+#define DASHKIN_UART_CFG_TX_CNT 	0x0FF00000
+#define DASHKIN_UART_CFG_TX_IRQ 	0x10000000
+
+#define DASHKIN_UART_RX_STAT_ERROR  0x00000001
+#define DASHKIN_UART_RX_STAT_FULL   0x00000002
+#define DASHKIN_UART_RX_STAT_EMPTY  0x00000004
+#define DASHKIN_UART_RX_STAT_READY  0x00000008
+
+#define DASHKIN_UART_TX_STAT_FULL   0x00000001
+#define DASHKIN_UART_TX_STAT_EMPTY  0x00000002
+
+#define DASHKIN_UART_RX_EMPTY 		0x100
+#define DASHKIN_UART_RX_DATA  		0x0FF
+
+
+
+/* Memory-mapped I/O access macros for RISC-V */
+#define UART_REG(base, reg) (*((volatile uint8_t *)((base) + (reg))))
+#define UART_RBR 0x00 /* Receiver Buffer Register */
+#define UART_THR 0x00 /* Transmitter Holding Register */
+#define UART_LSR 0x05 /* Line Status Register */
+#define UART_LSR_DR 0x01 /* Data Ready */
+#define UART_LSR_THRE 0x20 /* Transmit Holding Register Empty */
 
 /*
  * High-level UART interface.
  */
 struct amir_softc {
 	struct uart_softc base;
-	uint8_t		fcr;
-	uint8_t		ier;
-	uint8_t		mcr;
 
-	uint8_t		ier_mask;
-	uint8_t		ier_rxbits;
-	uint8_t		busy_detect;
+	uint32_t baudrate;
+	uint8_t  parity;
+	uint8_t  stop_bits;
+	uint8_t  data_bits;
+	uint8_t  flow_ctrl;
 };
 
 extern struct uart_ops uart_amir_ops;
